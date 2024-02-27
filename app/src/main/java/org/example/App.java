@@ -3,12 +3,31 @@
  */
 package org.example;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
+
+@Command(name = "App", mixinStandardHelpOptions = true, version = "App 1.0",
+        description = "A simple application that runs CompletableFutures")
+public class App implements Runnable {
+
+    @Option(names = {"-p", "--parallism"}, description = "ForkJoinPool parallelism", required = true)
+    private String parallelism;
+
+    @Option(names = {"-t", "--threads"}, description = "Number of CompletableFutures to create", required = true)
+    private int threads;
+
+    @Override
+    public void run() {
+        System.out.println("========== Fun with CompletableFutures ==========");
+
+        System.out.println("Inputs:");
+        System.out.println("  - parallism: " + parallelism);
+        System.out.println("  - Threads: " + threads);
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        new CommandLine(new App()).execute(args);
     }
 }
