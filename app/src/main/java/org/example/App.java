@@ -6,25 +6,46 @@ package org.example;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-
+import java.util.concurrent.ForkJoinPool;
 
 @Command(name = "App", mixinStandardHelpOptions = true, version = "App 1.0",
         description = "A simple application that runs CompletableFutures")
 public class App implements Runnable {
 
-    @Option(names = {"-p", "--parallism"}, description = "ForkJoinPool parallelism", required = true)
+    @Option(names = {"-p", "--parallism"}, description = "ForkJoinPool parallelism", required = false)
     private String parallelism;
 
     @Option(names = {"-t", "--threads"}, description = "Number of CompletableFutures to create", required = true)
     private int threads;
+
+    @Option(names = {"-i", "--io"}, description = "Run IO Bound Experiment", required = false)
+    private boolean isIOBoundEnabled = false;
+
+    @Option(names = {"-c", "--cpu"}, description = "Run CPU Bound Experiment", required = false)
+    private boolean isCPUBoundEnabled = false;
 
     @Override
     public void run() {
         System.out.println("========== Fun with CompletableFutures ==========");
 
         System.out.println("Inputs:");
-        System.out.println("  - parallism: " + parallelism);
-        System.out.println("  - Threads: " + threads);
+        System.out.println("  --parallism: " + parallelism);
+        System.out.println("  --threads: " + threads);
+
+        if (parallelism != null) {
+            System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", parallelism);
+        }
+
+        System.out.println("System Config:");
+        System.out.println("  CPU Core: " + Runtime.getRuntime().availableProcessors());
+        System.out.println("  CommonPool Parallelism: " + ForkJoinPool.commonPool().getParallelism());
+
+        if (isCPUBoundEnabled) {
+            System.out.println("\n=== Running IO Experiment ===");
+        }
+        if (isIOBoundEnabled) {
+            System.out.println("\n=== Running CPU Experiment ===");
+        }
     }
 
     public static void main(String[] args) {
