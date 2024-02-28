@@ -57,18 +57,19 @@ public class App implements Runnable {
         System.out.println("  CPU Core: " + Runtime.getRuntime().availableProcessors());
         System.out.println("  CommonPool Parallelism: " + ForkJoinPool.commonPool().getParallelism());
 
-        long start = System.nanoTime();
+        if (isIOBoundEnabled) {
+            System.out.println("\n=== Running IO Experiment ===");
+            long start = System.nanoTime();
+            ioBoundExperiment(threads);
+            System.out.println("Completed in " + Duration.ofNanos(System.nanoTime()  - start).toSeconds() + " seconds");
+        }
 
         if (isCPUBoundEnabled) {
             System.out.println("\n=== Running CPU Experiment ===");
+            long start = System.nanoTime();
             cpuBoundExperiment(threads);
+            System.out.println("Completed in " + Duration.ofNanos(System.nanoTime()  - start).toSeconds() + " seconds");
         }
-        if (isIOBoundEnabled) {
-            System.out.println("\n=== Running IO Experiment ===");
-            ioBoundExperiment(threads);
-        }
-
-        System.out.println("Completed in " + Duration.ofNanos(System.nanoTime()  - start).toSeconds() + " seconds");
     }
 
     public static void main(String[] args) {
